@@ -1,0 +1,5 @@
+import type { Metadata } from "next";
+import LandingPage from "../landing-page";
+
+export const metadata: Metadata = { title: "Gamesheet Standings Embed Builder | embed-gamesheet.dev", description: "Create a customizable Gamesheet standings iframe with team columns, colors, filters, and responsive sizing.", alternates: { canonical: "/gamesheet-standings-embed" } };
+export default function StandingsEmbedPage() { return <LandingPage eyebrow="GAMESHEET STANDINGS EMBED" title={<>Put your standings<br /><span>where fans look.</span></>} description="Create a polished Gamesheet standings widget for your league, club, or tournament website. Choose the columns, colors, filters, and dimensions that match your site." features={["Show team records, points, goals, special teams, and more.", "Customize the standings column order with GameSheet abbreviations.", "Filter by division, venue, or overall tournament standings."]} steps={["Enter your GameSheet season or league ID.", "Choose Standings and tune the display in Advanced Options.", "Copy the iframe snippet into your website’s HTML block."]} />; }

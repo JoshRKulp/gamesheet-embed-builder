@@ -54,6 +54,13 @@ const pageOptions: { key: PageKey; label: string; icon: string }[] = [
 
 const standingColumns = "rk, logo, team, gp, w, l, t, otw, otl, sow, sol, pts, ppct, rw, row, gf, ga, diff, stk, pim, ppo, ppg, shga, pppct, tsh, shg, ppga, pkpct";
 
+const faqs = [
+  ["What is a Gamesheet embed?", "A Gamesheet embed is an iframe that displays scores, schedules, standings, player stats, goalie stats, or team stats on your website. This builder creates the iframe URL and HTML for you."],
+  ["Where do I find my Gamesheet season ID?", "Open any page inside your Gamesheet season. The season ID is the number shown in your browser address bar. You can also switch the builder to League and use your league ID."],
+  ["Can I customize the colors and layout?", "Yes. Choose primary and secondary colors, set the iframe dimensions, and control logos, navigation, filters, links, standings, compact view, and infinite scrolling."],
+  ["Can I embed a tournament schedule?", "Yes. Use the tournament preset to generate separate standings, round-robin, and playoff iframe blocks that are ready to paste into your website."],
+];
+
 function buildUrl(state: BuilderState, page = state.page, overrides: Record<string, string | boolean> = {}) {
   if (!state.id.trim()) return "";
   const params = new URLSearchParams();
@@ -150,6 +157,13 @@ export default function Home() {
           {tournament && <div className="tournament-results">{tournamentBlocks.length ? tournamentBlocks.map(([label, blockUrl]) => <div className="tournament-block" key={label}><label>{label}</label><code>{iframeCode(blockUrl, state.width, state.height)}</code></div>) : <p className="hint">Add an ID to generate tournament blocks.</p>}</div>}
         </section>
       </div>
+      <section className="seo-content" aria-labelledby="about-heading">
+        <div className="seo-intro"><p className="eyebrow">THE FASTER WAY TO EMBED GAMESHEET</p><h2 id="about-heading">Build a Gamesheet embed<br /><span>without the guesswork.</span></h2><p>embed-gamesheet.dev is a free Gamesheet iframe generator for leagues, clubs, and tournament organizers. Configure your scores, schedule, standings, or stats widget visually, then copy one clean snippet into your website.</p></div>
+        <div className="seo-features"><div><span>01</span><h3>Pick a view</h3><p>Start with a season or league and choose games, schedule, standings, players, goalies, or team stats.</p></div><div><span>02</span><h3>Make it yours</h3><p>Match your organization with custom colors, dimensions, visibility controls, filters, columns, and sorting.</p></div><div><span>03</span><h3>Paste and publish</h3><p>Copy the generated iframe HTML into any website builder or HTML block. Preview it before you publish.</p></div></div>
+        <div className="faq-section"><p className="eyebrow">COMMON QUESTIONS</p><h2>Gamesheet embed FAQ</h2><div className="faq-grid">{faqs.map(([question, answer]) => <details key={question}><summary>{question}<span>＋</span></summary><p>{answer}</p></details>)}</div></div>
+        <div className="related-links"><p className="eyebrow">GO DEEPER</p><div><a href="/gamesheet-standings-embed">Gamesheet standings embed <span>→</span></a><a href="/gamesheet-schedule-embed">Gamesheet schedule embed <span>→</span></a><a href="/gamesheet-tournament-embed">Gamesheet tournament embed <span>→</span></a></div></div>
+      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@graph": [{ "@type": "WebSite", "@id": "https://www.embed-gamesheet.dev/#website", "url": "https://www.embed-gamesheet.dev/", "name": "embed-gamesheet.dev", "description": "Gamesheet embed builder for scores, schedules, standings, and stats.", "potentialAction": { "@type": "SearchAction", "target": "https://www.embed-gamesheet.dev/?q={search_term_string}", "query-input": "required name=search_term_string" } }, { "@type": "SoftwareApplication", "name": "embed-gamesheet.dev", "url": "https://www.embed-gamesheet.dev/", "applicationCategory": "DeveloperApplication", "operatingSystem": "Web", "description": "A free visual builder for Gamesheet scores, schedule, standings, and stats iframe embeds.", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" } }, { "@type": "FAQPage", "mainEntity": faqs.map(([question, answer]) => ({ "@type": "Question", name: question, acceptedAnswer: { "@type": "Answer", text: answer } })) }] }) }} />
       <footer><span>EMBED-GAMESHEET.DEV <b>×</b> GAMESHEET</span><span>Built for leagues, tournaments & clubs · <a href="https://github.com/JoshRKulp/gamesheet-embed-builder" target="_blank" rel="noreferrer">View source on GitHub ↗</a></span></footer>
     </main>
   );

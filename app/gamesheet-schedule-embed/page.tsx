@@ -1,0 +1,5 @@
+import type { Metadata } from "next";
+import LandingPage from "../landing-page";
+
+export const metadata: Metadata = { title: "Gamesheet Schedule Embed Builder | embed-gamesheet.dev", description: "Generate a Gamesheet schedule or scores iframe for your website with custom colors, filters, links, and sizing.", alternates: { canonical: "/gamesheet-schedule-embed" } };
+export default function ScheduleEmbedPage() { return <LandingPage eyebrow="GAMESHEET SCHEDULE EMBED" title={<>Show every game.<br /><span>Keep it simple.</span></>} description="Generate a GameSheet scores or schedule iframe that fits your website. Add filters for divisions, teams, game types, and search terms without writing query strings." features={["Embed completed scores, upcoming games, or the full schedule.", "Choose compact view, infinite scroll, filters, navigation, and links.", "Use season or league URLs for the right level of your organization."]} steps={["Select Season or League and enter the ID from GameSheet.", "Choose Games or Schedule and set your display preferences.", "Preview the result and copy the ready-to-paste iframe."]} />; }

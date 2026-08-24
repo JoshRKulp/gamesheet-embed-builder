@@ -1,0 +1,5 @@
+import type { Metadata } from "next";
+import LandingPage from "../landing-page";
+
+export const metadata: Metadata = { title: "Gamesheet Tournament Embed Builder | embed-gamesheet.dev", description: "Build a complete Gamesheet tournament embed with standings, round-robin results, and playoff schedules.", alternates: { canonical: "/gamesheet-tournament-embed" } };
+export default function TournamentEmbedPage() { return <LandingPage eyebrow="GAMESHEET TOURNAMENT EMBED" title={<>Tournament data<br /><span>in one clean flow.</span></>} description="Give players and families one place to follow tournament standings, round-robin games, and playoffs with a ready-made three-iframe layout." features={["Generate tournament standings with navigation hidden.", "Separate round-robin and playoff schedules by game type.", "Keep colors and dimensions consistent across every iframe block."]} steps={["Enter the tournament’s GameSheet season ID.", "Use the builder’s tournament preset to generate three blocks.", "Paste the labeled standings, round-robin, and playoff snippets into your page."]} />; }
