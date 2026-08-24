@@ -121,9 +121,9 @@ export default function Home() {
   return (
     <main className="shell">
       <header className="topbar">
-        <div className="brand"><span className="brand-mark">⌘</span><span>Embed<span className="accent">Kit</span></span></div>
+        <a className="brand" href="https://www.embed-gamesheet.dev/" aria-label="embed-gamesheet.dev home"><span className="brand-mark">⌘</span><span>embed<span className="accent">-gamesheet.dev</span></span></a>
         <span className="version">GAMESHEET BUILDER <i>•</i> V1.0</span>
-        <a className="docs-link" href="https://help.gamesheet.app/article/10-scores-schedule-standings-stats-embed-tool" target="_blank" rel="noreferrer">Documentation ↗</a>
+        <nav className="header-links" aria-label="Project links"><a className="docs-link" href="https://help.gamesheet.app/article/10-scores-schedule-standings-stats-embed-tool" target="_blank" rel="noreferrer">Documentation ↗</a><a className="docs-link github-link" href="https://github.com/JoshRKulp/gamesheet-embed-builder" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
       </header>
       <section className="hero"><div><p className="eyebrow">CONFIGURE ONCE. EMBED ANYWHERE.</p><h1>Your stats.<br /><span>Your way.</span></h1><p className="intro">Build a clean, custom Gamesheet embed without hand-writing URL parameters.</p></div><div className="hero-badge"><span>↗</span><small>LIVE<br />PREVIEW</small></div></section>
       <div className="workspace">
@@ -150,7 +150,7 @@ export default function Home() {
           {tournament && <div className="tournament-results">{tournamentBlocks.length ? tournamentBlocks.map(([label, blockUrl]) => <div className="tournament-block" key={label}><label>{label}</label><code>{iframeCode(blockUrl, state.width, state.height)}</code></div>) : <p className="hint">Add an ID to generate tournament blocks.</p>}</div>}
         </section>
       </div>
-      <footer><span>EMBEDKIT <b>×</b> GAMESHEET</span><span>Built for leagues, tournaments & clubs</span></footer>
+      <footer><span>EMBED-GAMESHEET.DEV <b>×</b> GAMESHEET</span><span>Built for leagues, tournaments & clubs · <a href="https://github.com/JoshRKulp/gamesheet-embed-builder" target="_blank" rel="noreferrer">View source on GitHub ↗</a></span></footer>
     </main>
   );
 }
