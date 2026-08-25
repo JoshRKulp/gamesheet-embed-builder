@@ -22,6 +22,7 @@ type BuilderState = {
   standings: boolean;
   compact: boolean;
   infiniteScroll: boolean;
+  teamNumber: string;
   division: string;
   team: string;
   query: string;
@@ -41,6 +42,7 @@ const defaults: BuilderState = {
   scope: "seasons", id: "", page: "games", primary: "F9C308", secondary: "36383D",
   width: "100%", height: "1000px", logo: true, navigation: true, statCards: true,
   filters: true, links: true, standings: true, compact: false, infiniteScroll: true,
+  teamNumber: "",
   division: "", team: "", query: "", gameType: "all", position: "all", venue: "all",
   standingsCols: "rk,logo,team,gp,w,l,t,otl,pts", playersCols: "", goaliesCols: "",
   playersSort: "", goaliesSort: "", playersLimit: "", goaliesLimit: "",
@@ -62,7 +64,7 @@ const faqs = [
 ];
 
 function buildUrl(state: BuilderState, page = state.page, overrides: Record<string, string | boolean> = {}) {
-  if (!state.id.trim()) return "";
+  if (!state.id.trim() || (page === "team-stats" && !state.teamNumber.trim())) return "";
   const params = new URLSearchParams();
   const add = (key: string, value: string | boolean | undefined) => {
     if (value !== undefined && value !== "" && value !== false && value !== "all") params.set(key, String(value));
@@ -96,7 +98,8 @@ function buildUrl(state: BuilderState, page = state.page, overrides: Record<stri
   }
   Object.entries(overrides).forEach(([key, value]) => add(key, value));
   const query = params.toString();
-  return `https://gamesheetstats.com/${state.scope}/${encodeURIComponent(state.id.trim())}/${page}${query ? `?${query}` : ""}`;
+  const teamPath = page === "team-stats" ? `/teams/${encodeURIComponent(state.teamNumber.trim())}` : "";
+  return `https://gamesheetstats.com/${state.scope}/${encodeURIComponent(state.id.trim())}${teamPath}/${page}${query ? `?${query}` : ""}`;
 }
 
 function iframeCode(url: string, width: string, height: string) {
@@ -111,6 +114,10 @@ export default function Home() {
   const update = <K extends keyof BuilderState>(key: K, value: BuilderState[K]) => setState((current) => ({ ...current, [key]: value }));
   const url = useMemo(() => buildUrl(state), [state]);
   const code = iframeCode(url || "YOUR_GAMESHEET_URL", state.width, state.height);
+  const previewPlaceholder = state.page === "team-stats"
+    ? "https://gamesheetstats.com/seasons/your-id/teams/your-team-number/team-stats"
+    : "https://gamesheetstats.com/seasons/your-id/games";
+  const waitingForTeamNumber = state.page === "team-stats" && state.id.trim() && !state.teamNumber.trim();
   const tournamentBlocks = useMemo(() => {
     if (!state.id.trim()) return [];
     const shared = { "configuration[navigation]": false };
@@ -139,6 +146,7 @@ export default function Home() {
           <div className="field-group"><label>Source</label><div className="segmented"><button className={state.scope === "seasons" ? "selected" : ""} onClick={() => update("scope", "seasons")}>Season</button><button className={state.scope === "leagues" ? "selected" : ""} onClick={() => update("scope", "leagues")}>League</button></div></div>
           <div className="field-group"><label htmlFor="source-id">{state.scope === "seasons" ? "Season" : "League"} ID <span className="required">*</span></label><input id="source-id" placeholder={state.scope === "seasons" ? "e.g. 317" : "e.g. 1148418"} value={state.id} inputMode="numeric" onChange={(e) => update("id", e.target.value.replace(/[^0-9]/g, ""))} /><p className="hint">Found in the URL of your Gamesheet {state.scope === "seasons" ? "season" : "league"}.</p></div>
           <div className="field-group"><label>Page</label><div className="page-grid">{pageOptions.map((option) => <button key={option.key} className={`page-option ${state.page === option.key ? "selected" : ""}`} onClick={() => update("page", option.key)}><span>{option.icon}</span>{option.label}</button>)}</div></div>
+          {state.page === "team-stats" && <div className="field-group"><label htmlFor="team-number">Team number <span className="required">*</span></label><input id="team-number" placeholder="e.g. 420769" value={state.teamNumber} inputMode="numeric" required onChange={(e) => update("teamNumber", e.target.value.replace(/[^0-9]/g, ""))} /><p className="hint">Found in the team stats URL after <code>/teams/</code>.</p></div>}
           <div className="divider" />
           <div className="card-heading compact-heading"><div><span className="section-number">02</span><h2>Style & sizing</h2></div></div>
           <div className="color-row"><div className="field-group"><label htmlFor="primary">Primary colour</label><div className="color-input"><input id="primary" type="color" value={`#${state.primary.replace(/^#/, "")}`} onChange={(e) => update("primary", e.target.value)} /><input value={state.primary.replace(/^#/, "").toUpperCase()} maxLength={6} onChange={(e) => update("primary", e.target.value.replace(/[^0-9a-f]/gi, "").slice(0, 6))} /></div></div><div className="field-group"><label htmlFor="secondary">Secondary colour</label><div className="color-input"><input id="secondary" type="color" value={`#${state.secondary.replace(/^#/, "")}`} onChange={(e) => update("secondary", e.target.value)} /><input value={state.secondary.replace(/^#/, "").toUpperCase()} maxLength={6} onChange={(e) => update("secondary", e.target.value.replace(/[^0-9a-f]/gi, "").slice(0, 6))} /></div></div></div>
@@ -149,10 +157,10 @@ export default function Home() {
           <div className="builder-actions"><button className="reset-button" onClick={() => { setState(defaults); setAdvanced(false); setTournament(false); }}>Reset</button><button className="primary-button" onClick={() => document.querySelector(".preview-card")?.scrollIntoView({ behavior: "smooth" })}>Preview embed <span>→</span></button></div>
         </section>
         <section className="preview-card card">
-          <div className="card-heading"><div><span className="section-number">03</span><h2>Preview & copy</h2></div><span className={`preview-status ${url ? "live" : ""}`}><i />{url ? "LIVE PREVIEW" : "AWAITING ID"}</span></div>
-          <div className={`preview-frame ${url ? "has-url" : ""}`} style={{ "--primary": `#${state.primary}` } as React.CSSProperties}>{url ? <iframe title="Gamesheet preview" src={url} style={{ width: state.width, height: state.height }} /> : <div className="empty-preview"><div className="empty-icon">⌁</div><p>Your live preview appears here</p><small>Enter a season or league ID to get started</small></div>}</div>
+          <div className="card-heading"><div><span className="section-number">03</span><h2>Preview & copy</h2></div><span className={`preview-status ${url ? "live" : ""}`}><i />{url ? "LIVE PREVIEW" : waitingForTeamNumber ? "AWAITING TEAM NUMBER" : "AWAITING ID"}</span></div>
+          <div className={`preview-frame ${url ? "has-url" : ""}`} style={{ "--primary": `#${state.primary}` } as React.CSSProperties}>{url ? <iframe title="Gamesheet preview" src={url} style={{ width: state.width, height: state.height }} /> : <div className="empty-preview"><div className="empty-icon">⌁</div><p>Your live preview appears here</p><small>{waitingForTeamNumber ? "Enter a team number to continue" : "Enter a season or league ID to get started"}</small></div>}</div>
           <div className="code-label"><span>EMBED CODE</span><span>HTML</span></div><div className="code-box"><code>{code}</code><button onClick={copyCode} aria-label="Copy embed code">{copied ? "✓" : "▣"}<span>{copied ? "Copied" : "Copy"}</span></button></div>
-          <div className="url-row"><span>Generated URL</span><button onClick={() => url && navigator.clipboard.writeText(url)} disabled={!url}>{url ? "Copy URL" : "Waiting for ID"}</button></div><div className="url-text">{url || "https://gamesheetstats.com/seasons/your-id/games"}</div>
+          <div className="url-row"><span>Generated URL</span><button onClick={() => url && navigator.clipboard.writeText(url)} disabled={!url}>{url ? "Copy URL" : waitingForTeamNumber ? "Waiting for team number" : "Waiting for ID"}</button></div><div className="url-text">{url || previewPlaceholder}</div>
           <div className="tournament-callout"><div><strong>Building a tournament page?</strong><p>Generate a ready-made standings, round robin, and playoff set.</p></div><button className={`small-toggle ${tournament ? "on" : ""}`} onClick={() => setTournament(!tournament)}>{tournament ? "Enabled" : "Try preset"} <span>→</span></button></div>
           {tournament && <div className="tournament-results">{tournamentBlocks.length ? tournamentBlocks.map(([label, blockUrl]) => <div className="tournament-block" key={label}><label>{label}</label><code>{iframeCode(blockUrl, state.width, state.height)}</code></div>) : <p className="hint">Add an ID to generate tournament blocks.</p>}</div>}
         </section>
